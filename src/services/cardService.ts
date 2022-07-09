@@ -1,5 +1,6 @@
-import * as cardRepository from "../repositories/cardRepository.js"
-import * as companyRepository from "../repositories/companyRepository.js"
+import { unauthorizedError } from "../utils/errors"
+import * as cardRepository from "../repositories/cardRepository"
+import * as companyRepository from "../repositories/companyRepository"
 
 const createCard = async (
 	name: string,
@@ -7,8 +8,12 @@ const createCard = async (
 	businessId: number,
 	apiKey: string
 ) => {
-	const validApiKey = await companyRepository.findByApiKey(apiKey)
-	if (!validApiKey) throw
+	// Promise.all([
+	//     await validateApiKey(apiKey),
+}
 
-	// 	return card
+const validateApiKey = async (apiKey: string) => {
+	const validApiKey = await companyRepository.findByApiKey(apiKey)
+	if (!validApiKey) throw unauthorizedError("Invalid API key")
+	return validApiKey
 }

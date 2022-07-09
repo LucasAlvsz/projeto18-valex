@@ -1,5 +1,5 @@
-import db from "../db/index.js"
-import { mapObjectToUpdateQuery } from "../utils/sqlUtils.js"
+import db from "../db/index"
+import { mapObjectToUpdateQuery } from "../utils/sqlUtils"
 
 export type TransactionTypes =
 	| "groceries"
