@@ -1,7 +1,7 @@
-import Joi from "joi"
+import { ObjectSchema } from "joi"
 import { NextFunction, Request, Response } from "express"
 
-const schemaValidateMiddleware = (schema: Joi.ObjectSchema) => {
+const schemaValidateMiddleware = (schema: ObjectSchema) => {
 	return (req: Request, res: Response, next: NextFunction) => {
 		const { error } = schema.validate(req, { abortEarly: false })
 		if (error)
