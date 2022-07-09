@@ -1,11 +1,10 @@
 import { Request, Response } from "express"
+import cardService from "../services/cardService"
 
 export const createCard = async (req: Request, res: Response) => {
-	const { nacme, type, businessId } = req.body
+	const { type } = req.body
 	const { employeeId } = req.params
 	const { "x-api-key": apiKey } = req.headers
-	console.log(apiKey)
+	await cardService.createCard(type, parseInt(employeeId), apiKey.toString())
 	res.sendStatus(200)
-
-	//const card = await cardRepository.createCard(name, type, businessId)
 }
