@@ -1,10 +1,10 @@
-import { Request, Response } from "express"
+import { NextFunction, Request, Response } from "express"
 
 const handleErrorMiddleware = (
 	err: Error,
 	req: Request,
 	res: Response,
-	next: Function
+	next: NextFunction
 ) => {
 	res.status(err.status || 500).send(err.message || "Internal server error")
 }
