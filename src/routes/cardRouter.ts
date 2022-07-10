@@ -4,6 +4,7 @@ import {
 	activateCard,
 	blockCard,
 	createCard,
+	unblockCard,
 } from "../controllers/cardController"
 import schemaValidateMiddleware from "../middlewares/schemaValidateMiddleware"
 import cardSchemas from "../schemas/cardSchemas/index"
@@ -28,6 +29,12 @@ cardRouter.put(
 	"/cards/:cardId/block",
 	schemaValidateMiddleware(blockAndUnblockCardSchema),
 	blockCard
+)
+
+cardRouter.put(
+	"/cards/:cardId/unblock",
+	schemaValidateMiddleware(blockAndUnblockCardSchema),
+	unblockCard
 )
 
 export default cardRouter

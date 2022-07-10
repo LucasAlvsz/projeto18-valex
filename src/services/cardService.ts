@@ -44,9 +44,21 @@ const activateCard = async (cardId: number, password: string, cvc: string) => {
 }
 
 const blockCard = async (cardId: number, password: string) => {
-	await validateEligibilityForBlocking(cardId, password)
+	await validateEligibilityForBlockingOrUnblocking(cardId, password, "block")
 	const cardDataUpdate = {
 		isBlocked: true,
+	}
+	await cardRepository.update(cardId, cardDataUpdate)
+}
+
+const unblockCard = async (cardId: number, password: string) => {
+	await validateEligibilityForBlockingOrUnblocking(
+		cardId,
+		password,
+		"unblock"
+	)
+	const cardDataUpdate = {
+		isBlocked: false,
 	}
 	await cardRepository.update(cardId, cardDataUpdate)
 }
@@ -129,19 +141,25 @@ const validateEligibilityForActivation = async (
 	validateSecurityCode(securityCode, cvc)
 }
 
-const validateEligibilityForBlocking = async (
+type cardOperation = "unblock" | "block"
+
+const validateEligibilityForBlockingOrUnblocking = async (
 	cardId: number,
-	password: string
+	password: string,
+	operation: cardOperation
 ) => {
 	const {
 		password: storagePassword,
 		expirationDate,
 		isBlocked,
 	} = await validateCardId(cardId)
+	validateExpirationDate(expirationDate)
 	if (decrypt(storagePassword) !== password)
 		throw unauthorizedError("Invalid password")
-	if (isBlocked) throw conflictError("Card is already blocked")
-	validateExpirationDate(expirationDate)
+	if (isBlocked && operation === "block")
+		throw conflictError("Card is already blocked")
+	if (!isBlocked && operation === "unblock")
+		throw conflictError("Card is already unblocked")
 }
 
 const validateCardId = async (cardId: number) => {
@@ -165,6 +183,7 @@ const cardService = {
 	createCard,
 	activateCard,
 	blockCard,
+	unblockCard,
 }
 
 export default cardService
