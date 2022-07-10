@@ -8,3 +8,10 @@ export const createCard = async (req: Request, res: Response) => {
 	await cardService.createCard(type, employeeId, apiKey)
 	res.sendStatus(200)
 }
+
+export const activateCard = async (req: Request, res: Response) => {
+	const { cardId } = req.params as { cardId: any }
+	const { password, cvc } = req.body as { password: string; cvc: string }
+	await cardService.activateCard(cardId, password, cvc)
+	res.sendStatus(200)
+}

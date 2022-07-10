@@ -1,6 +1,10 @@
 import { faker } from "@faker-js/faker"
 
-import { notFoundError, unauthorizedError } from "../utils/errors"
+import {
+	notFoundError,
+	unauthorizedError,
+	conflictError,
+} from "../utils/errors"
 import * as companyRepository from "../repositories/companyRepository"
 import * as employeeRepository from "../repositories/employeeRepository"
 import * as cardRepository from "../repositories/cardRepository"
@@ -10,8 +14,8 @@ import {
 	CardInsertData,
 } from "../repositories/cardRepository"
 
-import { sumDateWithYear } from "../utils/dataFormatter"
-import { encrypt } from "../utils/cryptography"
+import { compareDates, sumDateWithYear } from "../utils/dataFormatter"
+import { encrypt, decrypt } from "../utils/cryptography"
 
 // Magic Numbers
 const EXPIRATION_DATE_YEARS = 5
@@ -28,6 +32,15 @@ const createCard = async (
 	await validateUniqueTypeCard(type, employeeId)
 	const cardData = generateCardData(fullName, id, type)
 	await cardRepository.insert(cardData)
+}
+
+const activateCard = async (cardId: number, password: string, cvc: string) => {
+	await validateEligibilityForActivation(cardId, cvc)
+	const cardDataUpdate = {
+		isBlocked: false,
+		password: encrypt(password),
+	}
+	await cardRepository.update(cardId, cardDataUpdate)
 }
 
 const validateApiKey = async (apiKey: string) => {
@@ -52,7 +65,7 @@ const validateUniqueTypeCard = async (
 ) => {
 	const card = await cardRepository.findByTypeAndEmployeeId(type, employeeId)
 	if (card)
-		throw unauthorizedError(`${type} card already exists for this employee`)
+		throw conflictError(`${type} card already exists for this employee`)
 }
 
 const nameFormatter = (name: string) => {
@@ -96,8 +109,38 @@ const generateCardData = (
 	}
 }
 
+const validateEligibilityForActivation = async (
+	cardId: number,
+	cvc: string
+) => {
+	const { expirationDate, securityCode, password } = await validateCard(
+		cardId
+	)
+	if (password) throw conflictError("Card is already activated")
+	validateExpirationDate(expirationDate)
+	validateSecurityCode(securityCode, cvc)
+}
+
+const validateCard = async (cardId: number) => {
+	const card = await cardRepository.findById(cardId)
+	if (!card) throw notFoundError("Card not found")
+	return card
+}
+
+const validateExpirationDate = (expirationDate: string) => {
+	if (compareDates(new Date(), expirationDate) === "after")
+		throw unauthorizedError("Card expired")
+}
+
+const validateSecurityCode = (encryptedSecurityCode: string, cvc: string) => {
+	const decryptedSecurityCode = decrypt(encryptedSecurityCode)
+	console.log(decryptedSecurityCode, cvc)
+	if (decryptedSecurityCode !== cvc) throw unauthorizedError("Invalid CVC")
+}
+
 const cardService = {
 	createCard,
+	activateCard,
 }
 
 export default cardService
