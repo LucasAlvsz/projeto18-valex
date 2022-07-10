@@ -29,3 +29,9 @@ export const unblockCard = async (req: Request, res: Response) => {
 	await cardService.unblockCard(cardId, password)
 	res.sendStatus(200)
 }
+
+export const getCardStatements = (req: Request, res: Response) => {
+	const { cardId } = req.params as { cardId: any }
+	const { password } = req.body as { password: string }
+	return cardService.getCardStatements(cardId, password)
+}

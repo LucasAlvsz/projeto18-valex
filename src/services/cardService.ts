@@ -8,6 +8,8 @@ import {
 import * as companyRepository from "../repositories/companyRepository"
 import * as employeeRepository from "../repositories/employeeRepository"
 import * as cardRepository from "../repositories/cardRepository"
+import * as paymentRepository from "../repositories/paymentRepository"
+import * as rechargeRepository from "../repositories/rechargeRepository"
 
 import {
 	TransactionTypes,
@@ -19,6 +21,8 @@ import { encrypt, decrypt } from "../utils/cryptography"
 
 // Magic Numbers
 const EXPIRATION_DATE_YEARS = 5
+
+type cardOperation = "unblock" | "block"
 
 const createCard = async (
 	type: TransactionTypes,
@@ -61,6 +65,13 @@ const unblockCard = async (cardId: number, password: string) => {
 		isBlocked: false,
 	}
 	await cardRepository.update(cardId, cardDataUpdate)
+}
+
+const getCardStatements = async (cardId: number, password: string) => {
+	const { id } = await validateCardId(cardId)
+	const transactions = await paymentRepository.findByCardId(cardId)
+	const recharges = await rechargeRepository.findByCardId(cardId)
+	//const balance = getBalance(transactions, recharges)
 }
 
 const validateApiKey = async (apiKey: string) => {
@@ -141,8 +152,6 @@ const validateEligibilityForActivation = async (
 	validateSecurityCode(securityCode, cvc)
 }
 
-type cardOperation = "unblock" | "block"
-
 const validateEligibilityForBlockingOrUnblocking = async (
 	cardId: number,
 	password: string,
@@ -179,11 +188,14 @@ const validateSecurityCode = (encryptedSecurityCode: string, cvc: string) => {
 	if (decryptedSecurityCode !== cvc) throw unauthorizedError("Invalid CVC")
 }
 
+//const getBalance = (transactions:, recharges) => {}
+
 const cardService = {
 	createCard,
 	activateCard,
 	blockCard,
 	unblockCard,
+	getCardStatements,
 }
 
 export default cardService

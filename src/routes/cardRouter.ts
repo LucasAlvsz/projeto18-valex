@@ -37,4 +37,6 @@ cardRouter.put(
 	unblockCard
 )
 
+cardRouter.get("/cards/:cardId/transactions")
+
 export default cardRouter
