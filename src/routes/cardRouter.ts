@@ -1,9 +1,14 @@
 import { Router } from "express"
 
-import { activateCard, createCard } from "../controllers/cardController"
+import {
+	activateCard,
+	blockCard,
+	createCard,
+} from "../controllers/cardController"
 import schemaValidateMiddleware from "../middlewares/schemaValidateMiddleware"
-import activateCardSchema from "../schemas/activateCardSchema"
-import createCardSchema from "../schemas/createCardSchema"
+import cardSchemas from "../schemas/cardSchemas/index"
+
+const { createCardSchema, activateCardSchema, blockCardSchema } = cardSchemas
 
 const cardRouter = Router()
 
@@ -16,6 +21,12 @@ cardRouter.put(
 	"/cards/:cardId/activate",
 	schemaValidateMiddleware(activateCardSchema),
 	activateCard
+)
+
+cardRouter.put(
+	"/cards/:cardId/block",
+	schemaValidateMiddleware(blockCardSchema),
+	blockCard
 )
 
 export default cardRouter

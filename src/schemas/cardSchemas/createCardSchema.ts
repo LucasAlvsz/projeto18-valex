@@ -9,6 +9,8 @@ const bodySchema = Joi.object({
 		.valid("groceries", "restaurant", "transport", "education", "health")
 		.required(),
 })
+	.required()
+	.options({ allowUnknown: false })
 
 const headersSchema = Joi.object({
 	"x-api-key": Joi.string().required(),

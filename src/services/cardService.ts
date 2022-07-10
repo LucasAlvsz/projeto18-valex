@@ -43,6 +43,14 @@ const activateCard = async (cardId: number, password: string, cvc: string) => {
 	await cardRepository.update(cardId, cardDataUpdate)
 }
 
+const blockCard = async (cardId: number, password: string) => {
+	await validateEligibilityForBlocking(cardId, password)
+	const cardDataUpdate = {
+		isBlocked: true,
+	}
+	await cardRepository.update(cardId, cardDataUpdate)
+}
+
 const validateApiKey = async (apiKey: string) => {
 	const validApiKey = await companyRepository.findByApiKey(apiKey)
 	if (!validApiKey) throw unauthorizedError("Invalid API key")
@@ -104,7 +112,7 @@ const generateCardData = (
 		securityCode: encryptedSecurityCode,
 		expirationDate,
 		isVirtual: false,
-		isBlocked: true,
+		isBlocked: false,
 		type,
 	}
 }
@@ -113,7 +121,7 @@ const validateEligibilityForActivation = async (
 	cardId: number,
 	cvc: string
 ) => {
-	const { expirationDate, securityCode, password } = await validateCard(
+	const { expirationDate, securityCode, password } = await validateCardId(
 		cardId
 	)
 	if (password) throw conflictError("Card is already activated")
@@ -121,7 +129,22 @@ const validateEligibilityForActivation = async (
 	validateSecurityCode(securityCode, cvc)
 }
 
-const validateCard = async (cardId: number) => {
+const validateEligibilityForBlocking = async (
+	cardId: number,
+	password: string
+) => {
+	const {
+		password: storagePassword,
+		expirationDate,
+		isBlocked,
+	} = await validateCardId(cardId)
+	if (decrypt(storagePassword) !== password)
+		throw unauthorizedError("Invalid password")
+	if (isBlocked) throw conflictError("Card is already blocked")
+	validateExpirationDate(expirationDate)
+}
+
+const validateCardId = async (cardId: number) => {
 	const card = await cardRepository.findById(cardId)
 	if (!card) throw notFoundError("Card not found")
 	return card
@@ -141,6 +164,7 @@ const validateSecurityCode = (encryptedSecurityCode: string, cvc: string) => {
 const cardService = {
 	createCard,
 	activateCard,
+	blockCard,
 }
 
 export default cardService
