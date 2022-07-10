@@ -10,11 +10,11 @@ const bodySchema = Joi.object({
 	.required()
 	.options({ allowUnknown: false })
 
-const activateCardSchema = Joi.object({
+const blockAndUnblockCardSchema = Joi.object({
 	params: paramsSchema,
 	body: bodySchema,
 })
 	.required()
 	.options({ allowUnknown: true })
 
-export default activateCardSchema
+export default blockAndUnblockCardSchema

@@ -1,11 +1,11 @@
 import createCardSchema from "./createCardSchema"
 import activateCardSchema from "./activateCardSchema"
-import blockCardSchema from "./blockCardSchema"
+import blockAndUnblockCardSchema from "./blockAndUnblockCardSchema"
 
 const cardSchemas = {
 	createCardSchema,
 	activateCardSchema,
-	blockCardSchema,
+	blockAndUnblockCardSchema,
 }
 
 export default cardSchemas

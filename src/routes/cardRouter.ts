@@ -8,7 +8,8 @@ import {
 import schemaValidateMiddleware from "../middlewares/schemaValidateMiddleware"
 import cardSchemas from "../schemas/cardSchemas/index"
 
-const { createCardSchema, activateCardSchema, blockCardSchema } = cardSchemas
+const { createCardSchema, activateCardSchema, blockAndUnblockCardSchema } =
+	cardSchemas
 
 const cardRouter = Router()
 
@@ -25,7 +26,7 @@ cardRouter.put(
 
 cardRouter.put(
 	"/cards/:cardId/block",
-	schemaValidateMiddleware(blockCardSchema),
+	schemaValidateMiddleware(blockAndUnblockCardSchema),
 	blockCard
 )
 
