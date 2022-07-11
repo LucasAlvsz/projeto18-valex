@@ -15,24 +15,24 @@ const { createCardSchema, activateCardSchema, blockAndUnblockCardSchema } =
 const cardRouter = Router()
 
 cardRouter.post(
-	"/cards/:employeeId",
+	"/create/:employeeId",
 	schemaValidateMiddleware(createCardSchema),
 	createCard
 )
 cardRouter.put(
-	"/cards/:cardId/activate",
+	"/activate",
 	schemaValidateMiddleware(activateCardSchema),
 	activateCard
 )
 
 cardRouter.put(
-	"/cards/:cardId/block",
+	"/block",
 	schemaValidateMiddleware(blockAndUnblockCardSchema),
 	blockCard
 )
 
 cardRouter.put(
-	"/cards/:cardId/unblock",
+	"/unblock",
 	schemaValidateMiddleware(blockAndUnblockCardSchema),
 	unblockCard
 )

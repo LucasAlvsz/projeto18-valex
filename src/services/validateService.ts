@@ -14,15 +14,30 @@ const validateExpirationDate = (expirationDate: string) => {
 		throw unauthorizedError("Card expired")
 }
 
-const validateCardId = async (cardId: number) => {
+const validateCardById = async (cardId: number) => {
 	const card = await cardRepository.findById(cardId)
 	if (!card) throw notFoundError("Card not found")
 	return card
 }
 
+const validateCardByDetails = async (
+	number: string,
+	cardholderName: string,
+	expirationDate: string
+) => {
+	const cardData = await cardRepository.findByCardDetails(
+		number,
+		cardholderName,
+		expirationDate
+	)
+	if (!cardData) throw notFoundError("Card not found")
+	return cardData
+}
+
 const validateService = {
 	validateApiKey,
-	validateCardId,
+	validateCardById,
+	validateCardByDetails,
 	validateExpirationDate,
 }
 

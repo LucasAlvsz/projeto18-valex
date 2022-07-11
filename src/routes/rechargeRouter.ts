@@ -10,7 +10,7 @@ const { rechargeCardSchema } = rechargeSchema
 const rechargeRouter = Router()
 
 rechargeRouter.post(
-	"/recharge/:cardId",
+	"/recharge",
 	schemaValidateMiddleware(rechargeCardSchema),
 	rechargeCard
 )

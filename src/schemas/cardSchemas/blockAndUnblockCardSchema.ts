@@ -1,17 +1,14 @@
 import Joi from "joi"
+import cardIdentifierSchema from "../cardIdentifierSchema"
 
-const paramsSchema = Joi.object({
-	cardId: Joi.number().required(),
-}).required()
-
-const bodySchema = Joi.object({
-	password: Joi.string().required(),
-})
+const bodySchema = cardIdentifierSchema
+	.keys({
+		password: Joi.string().required(),
+	})
 	.required()
 	.options({ allowUnknown: false })
 
 const blockAndUnblockCardSchema = Joi.object({
-	params: paramsSchema,
 	body: bodySchema,
 })
 	.required()

@@ -1,10 +1,5 @@
 import Joi from "joi"
-
-const params = Joi.object({
-	cardId: Joi.number().required(),
-})
-	.required()
-	.options({ allowUnknown: false })
+import cardIdentifierSchema from "../cardIdentifierSchema"
 
 const headers = Joi.object({
 	"x-api-key": Joi.string().required(),
@@ -12,14 +7,14 @@ const headers = Joi.object({
 	.required()
 	.options({ allowUnknown: true })
 
-const body = Joi.object({
-	amount: Joi.number().min(1).required(),
-})
+const body = cardIdentifierSchema
+	.keys({
+		amount: Joi.number().min(1).required(),
+	})
 	.required()
 	.options({ allowUnknown: false })
 
 const rechargeSchema = Joi.object({
-	params,
 	body,
 	headers,
 })

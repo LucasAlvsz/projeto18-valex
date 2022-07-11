@@ -20,23 +20,15 @@ import {
 
 import { sumDateWithYear } from "../utils/dataFormatter"
 import { encrypt, decrypt } from "../utils/cryptography"
+import nameFormatter from "../utils/nameFormatter"
 
 // Magic Numbers
 const EXPIRATION_DATE_YEARS = 5
 
 type cardOperation = "unblock" | "block"
 
-const unblockCard = async (cardId: number, password: string) => {
-	await validateEligibilityForBlockingOrUnblocking(
-		cardId,
-		password,
-		"unblock"
-	)
-	persistUnlockInDatabase(cardId)
-}
-
 const getCardStatements = async (cardId: number, password: string) => {
-	const { id } = await validateService.validateCardId(cardId)
+	const { id } = await validateService.validateCardById(cardId)
 	const transactions = await paymentRepository.findByCardId(cardId)
 	const recharges = await rechargeRepository.findByCardId(cardId)
 	//const balance = getBalance(transactions, recharges)
@@ -59,18 +51,6 @@ const validateUniqueTypeCard = async (
 	const card = await cardRepository.findByTypeAndEmployeeId(type, employeeId)
 	if (card)
 		throw conflictError(`${type} card already exists for this employee`)
-}
-
-const nameFormatter = (name: string) => {
-	const nameArray = name.split(" ")
-	const firstName = nameArray[0]
-	const lastName = nameArray[1]
-	const middleName = nameArray.splice(1, nameArray.length - 1)
-	let formattedMiddleName = []
-	middleName.forEach(
-		name => name.length >= 3 && formattedMiddleName.push(name.slice(0, 1))
-	)
-	return `${firstName} ${formattedMiddleName.join(" ")} ${lastName}`
 }
 
 const createSecurityCode = () => {
@@ -116,33 +96,47 @@ const validateEligibilityForCreation = async (
 }
 
 const validateEligibilityForActivation = async (
-	cardId: number,
+	number: string,
+	name: string,
+	expirationDate: string,
 	cvc: string
 ) => {
-	const { expirationDate, securityCode, password } =
-		await validateService.validateCardId(cardId)
+	const cardholderName = nameFormatter(name)
+	const cardData = await validateService.validateCardByDetails(
+		number,
+		cardholderName,
+		expirationDate
+	)
+	const { securityCode, password } = cardData
 	if (password) throw conflictError("Card is already activated")
 	validateService.validateExpirationDate(expirationDate)
 	validateSecurityCode(securityCode, cvc)
+	return cardData
 }
 
 const validateEligibilityForBlockingOrUnblocking = async (
-	cardId: number,
+	number: string,
+	name: string,
+	expirationDate: string,
 	password: string,
 	operation: cardOperation
 ) => {
-	const {
-		password: storagePassword,
-		expirationDate,
-		isBlocked,
-	} = await validateService.validateCardId(cardId)
+	const cardholderName = nameFormatter(name)
+	const cardData = await validateService.validateCardByDetails(
+		number,
+		cardholderName,
+		expirationDate
+	)
+	const { password: storagePassword, isBlocked } = cardData
 	validateService.validateExpirationDate(expirationDate)
 	if (decrypt(storagePassword) !== password)
 		throw unauthorizedError("Invalid password")
 	if (isBlocked && operation === "block")
 		throw conflictError("Card is already blocked")
 	if (!isBlocked && operation === "unblock")
-		throw conflictError("Card is already unblocked") //TODO refactor this
+		throw conflictError("Card is already unblocked") //REFACTOR this
+
+	return cardData
 }
 
 const validateSecurityCode = (encryptedSecurityCode: string, cvc: string) => {

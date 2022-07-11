@@ -3,15 +3,22 @@ import validateService from "./validateService"
 import { unauthorizedError } from "../utils/errors"
 
 const validateEligibilityToRechargeCard = async (
-	cardId: number,
+	number: string,
+	name: string,
+	expirationDate: string,
 	apiKey: string
 ) => {
 	await validateService.validateApiKey(apiKey)
-	const { expirationDate, password } = await validateService.validateCardId(
-		cardId
+
+	const cardData = await validateService.validateCardByDetails(
+		number,
+		name,
+		expirationDate
 	)
+	const { password } = cardData
 	validateService.validateExpirationDate(expirationDate)
 	if (!password) throw unauthorizedError("Card is not activated")
+	return cardData
 }
 
 const persistCardRechargeInDatabase = async (
