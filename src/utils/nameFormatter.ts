@@ -7,6 +7,6 @@ const nameFormatter = (name: string) => {
 		name => name.length >= 3 && formattedMiddleName.push(name.slice(0, 1))
 	)
 	return `${firstName} ${formattedMiddleName.join(" ")} ${lastName}`
-} // FIXME
+}
 
 export default nameFormatter

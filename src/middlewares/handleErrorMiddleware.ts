@@ -10,7 +10,6 @@ const handleErrorMiddleware = (
 }
 
 interface Error {
-	type: string //TODO remove this
 	status: number
 	message: string
 }
