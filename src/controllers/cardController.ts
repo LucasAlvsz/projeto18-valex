@@ -3,6 +3,8 @@ import cardService from "../services/cardService"
 import { TransactionTypes } from "../repositories/cardRepository"
 import validateService from "../services/validateService"
 import paymentService from "../services/paymentService"
+import rechargeService from "../services/rechargeService"
+import nameFormatter from "../utils/nameFormatterUtils"
 
 export const createCard = async (req: Request, res: Response) => {
 	const { type } = req.body as { type: TransactionTypes }
@@ -90,8 +92,16 @@ export const getCardStatements = async (req: Request, res: Response) => {
 	}
 	const { id: cardId } = await validateService.validateCardByDetails(
 		number,
-		name,
+		nameFormatter(name),
 		expirationDate
 	)
-	//const transactions = await
+	const transactions = await paymentService.getTransactionsByCardId(cardId)
+	const recharges = await rechargeService.getRechargesByCardId(cardId)
+	const balance = cardService.getBalance(transactions, recharges)
+	const formattedStatementsData = cardService.getformattedStatementsData(
+		recharges,
+		transactions,
+		balance
+	)
+	res.status(200).send(formattedStatementsData)
 }

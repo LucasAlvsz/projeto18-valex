@@ -8,8 +8,6 @@ import {
 
 import * as employeeRepository from "../repositories/employeeRepository"
 import * as cardRepository from "../repositories/cardRepository"
-import * as paymentRepository from "../repositories/paymentRepository"
-import * as rechargeRepository from "../repositories/rechargeRepository"
 
 import validateService from "./validateService"
 
@@ -18,7 +16,7 @@ import {
 	CardInsertData,
 } from "../repositories/cardRepository"
 
-import { sumDateWithYear } from "../utils/dataFormatterUtils"
+import { getFormattedDate, sumDateWithYear } from "../utils/dateFormatterUtils"
 import { encrypt, decrypt } from "../utils/cryptographyUtils"
 import nameFormatter from "../utils/nameFormatterUtils"
 import getAmount from "./getAmountUtils"
@@ -28,23 +26,8 @@ const EXPIRATION_DATE_YEARS = 5
 
 type cardOperation = "unblock" | "block"
 
-const validateEmployee = async (employeeId: number) => {
-	const employee = await employeeRepository.findById(employeeId)
-	if (!employee) throw notFoundError("Employee not found")
-	return employee
-}
-
 const createCardNumber = () => {
 	return faker.finance.creditCardNumber("#### #### #### ####")
-}
-
-const validateUniqueTypeCard = async (
-	type: TransactionTypes,
-	employeeId: number
-) => {
-	const card = await cardRepository.findByTypeAndEmployeeId(type, employeeId)
-	if (card)
-		throw conflictError(`${type} card already exists for this employee`)
 }
 
 const createSecurityCode = () => {
@@ -76,8 +59,46 @@ const generateCardData = (
 	}
 }
 
+const getformattedStatementsData = (
+	rechargeData: object[],
+	transactions: object[],
+	balance: number
+) => {
+	const formattedRecharges = getFormattedDate(
+		rechargeData,
+		"timestamp",
+		"DD/MM/YYYY"
+	)
+	const formattedTransactions = getFormattedDate(
+		transactions,
+		"timestamp",
+		"DD/MM/YYYY"
+	)
+	const formattedStatementsData = {
+		balance,
+		transactions: formattedTransactions,
+		recharges: formattedRecharges,
+	}
+	return formattedStatementsData
+}
+
 const getBalance = (transactions: object[], recharges: object[]) => {
 	return getAmount(recharges, "amount") - getAmount(transactions, "amount")
+}
+
+const validateUniqueTypeCard = async (
+	type: TransactionTypes,
+	employeeId: number
+) => {
+	const card = await cardRepository.findByTypeAndEmployeeId(type, employeeId)
+	if (card)
+		throw conflictError(`${type} card already exists for this employee`)
+}
+
+const validateEmployee = async (employeeId: number) => {
+	const employee = await employeeRepository.findById(employeeId)
+	if (!employee) throw notFoundError("Employee not found")
+	return employee
 }
 
 const validateEligibilityForCreation = async (
@@ -182,6 +203,7 @@ const cardService = {
 	persistLockInDatabase,
 	persistUnlockInDatabase,
 	getBalance,
+	getformattedStatementsData,
 }
 
 export default cardService

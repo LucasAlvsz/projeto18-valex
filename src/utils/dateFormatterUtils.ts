@@ -3,8 +3,19 @@ import customParseFormat from "dayjs/plugin/customParseFormat"
 
 dayjs.extend(customParseFormat)
 
-export const getFormattedDate = (date: Date | string) => {
-	return dayjs(date).format("MM/YY")
+export const getFormattedDate = (
+	objectData: object[],
+	key: string,
+	format: string
+) => {
+	const formattedDate = objectData.map(item => {
+		const date = dayjs(item[key])
+		return {
+			...item,
+			[key]: date.format(format),
+		}
+	})
+	return formattedDate
 }
 
 export const sumDateWithYear = (date: Date, year: number) => {

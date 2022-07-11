@@ -1,6 +1,6 @@
 import * as companyRepository from "../repositories/companyRepository"
 import * as cardRepository from "../repositories/cardRepository"
-import { compareDates } from "../utils/dataFormatterUtils"
+import { compareDates } from "../utils/dateFormatterUtils"
 import { unauthorizedError, notFoundError } from "../utils/errorsUtils"
 
 const validateApiKey = async (apiKey: string) => {

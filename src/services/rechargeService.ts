@@ -39,10 +39,10 @@ const persistCardRechargeInDatabase = async (
 	await rechargeRepository.insert(rechargeData)
 }
 
-const rechargeCardService = {
+const rechargeService = {
 	validateEligibilityToRechargeCard,
 	persistCardRechargeInDatabase,
 	getRechargesByCardId,
 }
 
-export default rechargeCardService
+export default rechargeService

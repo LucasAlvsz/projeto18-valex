@@ -4,13 +4,18 @@ import {
 	activateCard,
 	blockCard,
 	createCard,
+	getCardStatements,
 	unblockCard,
 } from "../controllers/cardController"
 import schemaValidateMiddleware from "../middlewares/schemaValidateMiddleware"
 import cardSchemas from "../schemas/cardSchemas/index"
 
-const { createCardSchema, activateCardSchema, blockAndUnblockCardSchema } =
-	cardSchemas
+const {
+	createCardSchema,
+	activateCardSchema,
+	blockAndUnblockCardSchema,
+	getCardStatementsSchema,
+} = cardSchemas
 
 const cardRouter = Router()
 
@@ -37,6 +42,10 @@ cardRouter.put(
 	unblockCard
 )
 
-cardRouter.get("/cards/:cardId/transactions")
+cardRouter.get(
+	"/statements",
+	schemaValidateMiddleware(getCardStatementsSchema),
+	getCardStatements
+)
 
 export default cardRouter
