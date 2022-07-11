@@ -4,7 +4,7 @@ import {
 	notFoundError,
 	unauthorizedError,
 	conflictError,
-} from "../utils/errors"
+} from "../utils/errorsUtils"
 
 import * as employeeRepository from "../repositories/employeeRepository"
 import * as cardRepository from "../repositories/cardRepository"
@@ -18,9 +18,10 @@ import {
 	CardInsertData,
 } from "../repositories/cardRepository"
 
-import { sumDateWithYear } from "../utils/dataFormatter"
-import { encrypt, decrypt } from "../utils/cryptography"
-import nameFormatter from "../utils/nameFormatter"
+import { sumDateWithYear } from "../utils/dataFormatterUtils"
+import { encrypt, decrypt } from "../utils/cryptographyUtils"
+import nameFormatter from "../utils/nameFormatterUtils"
+import getAmount from "./getAmountUtils"
 
 // Magic Numbers
 const EXPIRATION_DATE_YEARS = 5
@@ -29,8 +30,7 @@ type cardOperation = "unblock" | "block"
 
 const getCardStatements = async (cardId: number, password: string) => {
 	const { id } = await validateService.validateCardById(cardId)
-	const transactions = await paymentRepository.findByCardId(cardId)
-	const recharges = await rechargeRepository.findByCardId(cardId)
+
 	//const balance = getBalance(transactions, recharges)
 }
 
@@ -80,6 +80,22 @@ const generateCardData = (
 		isBlocked: false,
 		type,
 	}
+}
+
+const getTransactionsByCardId = async (cardId: number) => {
+	await validateService.validateCardById(cardId)
+	const transactions = await paymentRepository.findByCardId(cardId)
+	return transactions
+}
+
+const getRechargesByCardId = async (cardId: number) => {
+	await validateService.validateCardById(cardId)
+	const recharges = await rechargeRepository.findByCardId(cardId)
+	return recharges
+}
+
+const getBalance = (transactions: object[], recharges: object[]) => {
+	return getAmount(recharges, "amount") - getAmount(transactions, "amount")
 }
 
 const validateEligibilityForCreation = async (
@@ -174,8 +190,6 @@ const persistUnlockInDatabase = async (cardId: number) => {
 	await cardRepository.update(cardId, cardDataUpdate)
 }
 
-//const getBalance = (transactions:, recharges) => {}
-
 const cardService = {
 	validateEligibilityForCreation,
 	generateCardData,
@@ -185,7 +199,9 @@ const cardService = {
 	validateEligibilityForBlockingOrUnblocking,
 	persistLockInDatabase,
 	persistUnlockInDatabase,
-	getCardStatements,
+	getTransactionsByCardId,
+	getRechargesByCardId,
+	getBalance,
 }
 
 export default cardService

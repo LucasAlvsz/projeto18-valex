@@ -1,7 +1,7 @@
 import * as companyRepository from "../repositories/companyRepository"
 import * as cardRepository from "../repositories/cardRepository"
-import { compareDates } from "../utils/dataFormatter"
-import { unauthorizedError, notFoundError } from "../utils/errors"
+import { compareDates } from "../utils/dataFormatterUtils"
+import { unauthorizedError, notFoundError } from "../utils/errorsUtils"
 
 const validateApiKey = async (apiKey: string) => {
 	const validApiKey = await companyRepository.findByApiKey(apiKey)

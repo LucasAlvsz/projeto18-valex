@@ -1,6 +1,7 @@
 import * as rechargeRepository from "../repositories/rechargeRepository"
 import validateService from "./validateService"
-import { unauthorizedError } from "../utils/errors"
+import { unauthorizedError } from "../utils/errorsUtils"
+import nameFormatter from "../utils/nameFormatterUtils"
 
 const validateEligibilityToRechargeCard = async (
 	number: string,
@@ -9,10 +10,10 @@ const validateEligibilityToRechargeCard = async (
 	apiKey: string
 ) => {
 	await validateService.validateApiKey(apiKey)
-
+	const cardholderName = nameFormatter(name)
 	const cardData = await validateService.validateCardByDetails(
 		number,
-		name,
+		cardholderName,
 		expirationDate
 	)
 	const { password } = cardData
