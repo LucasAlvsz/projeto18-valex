@@ -40,6 +40,12 @@ const validateBusinessById = async (businessId: number) => {
 	return businessData
 }
 
+const getTransactionsByCardId = async (cardId: number) => {
+	await validateService.validateCardById(cardId)
+	const transactions = await paymentRepository.findByCardId(cardId)
+	return transactions
+}
+
 const persistPaymentInDatabase = async (
 	cardId: number,
 	businessId: number,
@@ -52,6 +58,7 @@ const persistPaymentInDatabase = async (
 const paymentService = {
 	validateEligibilityForPayment,
 	persistPaymentInDatabase,
+	getTransactionsByCardId,
 }
 
 export default paymentService

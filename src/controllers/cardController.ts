@@ -1,6 +1,8 @@
 import { Request, Response } from "express"
 import cardService from "../services/cardService"
 import { TransactionTypes } from "../repositories/cardRepository"
+import validateService from "../services/validateService"
+import paymentService from "../services/paymentService"
 
 export const createCard = async (req: Request, res: Response) => {
 	const { type } = req.body as { type: TransactionTypes }
@@ -80,8 +82,16 @@ export const unblockCard = async (req: Request, res: Response) => {
 	res.sendStatus(200)
 }
 
-export const getCardStatements = (req: Request, res: Response) => {
-	const { cardId } = req.params as { cardId: any }
-	const { password } = req.body as { password: string }
-	return cardService.getCardStatements(cardId, password)
+export const getCardStatements = async (req: Request, res: Response) => {
+	const { number, name, expirationDate } = req.body as {
+		number: string
+		name: string
+		expirationDate: string
+	}
+	const { id: cardId } = await validateService.validateCardByDetails(
+		number,
+		name,
+		expirationDate
+	)
+	//const transactions = await
 }

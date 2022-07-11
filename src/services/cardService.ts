@@ -28,12 +28,6 @@ const EXPIRATION_DATE_YEARS = 5
 
 type cardOperation = "unblock" | "block"
 
-const getCardStatements = async (cardId: number, password: string) => {
-	const { id } = await validateService.validateCardById(cardId)
-
-	//const balance = getBalance(transactions, recharges)
-}
-
 const validateEmployee = async (employeeId: number) => {
 	const employee = await employeeRepository.findById(employeeId)
 	if (!employee) throw notFoundError("Employee not found")
@@ -80,18 +74,6 @@ const generateCardData = (
 		isBlocked: false,
 		type,
 	}
-}
-
-const getTransactionsByCardId = async (cardId: number) => {
-	await validateService.validateCardById(cardId)
-	const transactions = await paymentRepository.findByCardId(cardId)
-	return transactions
-}
-
-const getRechargesByCardId = async (cardId: number) => {
-	await validateService.validateCardById(cardId)
-	const recharges = await rechargeRepository.findByCardId(cardId)
-	return recharges
 }
 
 const getBalance = (transactions: object[], recharges: object[]) => {
@@ -199,8 +181,6 @@ const cardService = {
 	validateEligibilityForBlockingOrUnblocking,
 	persistLockInDatabase,
 	persistUnlockInDatabase,
-	getTransactionsByCardId,
-	getRechargesByCardId,
 	getBalance,
 }
 

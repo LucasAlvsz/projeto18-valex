@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import paymentService from "../services/paymentService"
 import cardService from "../services/cardService"
+import rechargeCardService from "../services/rechargeService"
 import { unauthorizedError } from "../utils/errorsUtils"
 
 export const paymentAtPointOfSale = async (req: Request, res: Response) => {
@@ -20,8 +21,8 @@ export const paymentAtPointOfSale = async (req: Request, res: Response) => {
 		password,
 		businessId
 	)
-	const transactions = await cardService.getTransactionsByCardId(cardId)
-	const recharges = await cardService.getRechargesByCardId(cardId)
+	const transactions = await paymentService.getTransactionsByCardId(cardId)
+	const recharges = await rechargeCardService.getRechargesByCardId(cardId)
 	const balance = cardService.getBalance(transactions, recharges)
 	if (balance < amount) throw unauthorizedError("Insufficient funds")
 	await paymentService.persistPaymentInDatabase(cardId, businessId, amount)

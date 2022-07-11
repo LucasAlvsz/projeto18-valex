@@ -22,6 +22,12 @@ const validateEligibilityToRechargeCard = async (
 	return cardData
 }
 
+const getRechargesByCardId = async (cardId: number) => {
+	await validateService.validateCardById(cardId)
+	const recharges = await rechargeRepository.findByCardId(cardId)
+	return recharges
+}
+
 const persistCardRechargeInDatabase = async (
 	cardId: number,
 	amount: number
@@ -36,6 +42,7 @@ const persistCardRechargeInDatabase = async (
 const rechargeCardService = {
 	validateEligibilityToRechargeCard,
 	persistCardRechargeInDatabase,
+	getRechargesByCardId,
 }
 
 export default rechargeCardService
