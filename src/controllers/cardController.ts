@@ -18,8 +18,8 @@ export const createCard = async (req: Request, res: Response) => {
 	)
 	const cardData = cardService.generateCardData(name, employeeId, type)
 	await cardService.persistCardInDatabase(cardData)
-
-	res.status(201).send(cardData) // REFACTOR
+	delete cardData.employeeId
+	res.status(201).send(cardData)
 }
 
 export const activateCard = async (req: Request, res: Response) => {

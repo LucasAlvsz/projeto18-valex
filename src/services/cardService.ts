@@ -46,12 +46,12 @@ const generateCardData = (
 	const cardNumber = createCardNumber()
 	const cardholderName = nameFormatter(name)
 	const expirationDate = createExpirationDate()
-	const encryptedSecurityCode = encrypt(createSecurityCode())
+	const securityCode = createSecurityCode()
 	return {
 		number: cardNumber,
 		employeeId,
 		cardholderName,
-		securityCode: encryptedSecurityCode,
+		securityCode,
 		expirationDate,
 		isVirtual: false,
 		isBlocked: false,
@@ -165,6 +165,7 @@ const validateSecurityCode = (encryptedSecurityCode: string, cvc: string) => {
 }
 
 const persistCardInDatabase = async (cardData: CardInsertData) => {
+	cardData = { ...cardData, securityCode: encrypt(cardData.securityCode) }
 	await cardRepository.insert(cardData)
 }
 
