@@ -1,13 +1,13 @@
 import Joi from "joi"
 import cardIdentifierSchema from "../cardIdentifierSchema"
 
-const headers = Joi.object({
+const headersSchema = Joi.object({
 	"x-api-key": Joi.string().required(),
 })
 	.required()
 	.options({ allowUnknown: true })
 
-const body = cardIdentifierSchema
+const bodySchema = cardIdentifierSchema
 	.keys({
 		amount: Joi.number().min(1).required(),
 	})
@@ -15,8 +15,8 @@ const body = cardIdentifierSchema
 	.options({ allowUnknown: false })
 
 const rechargeSchema = Joi.object({
-	body,
-	headers,
+	body: bodySchema,
+	headers: headersSchema,
 })
 	.required()
 	.options({ allowUnknown: true })
