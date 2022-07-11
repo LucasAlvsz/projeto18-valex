@@ -2,11 +2,6 @@ import * as rechargeRepository from "../repositories/rechargeRepository"
 import validateService from "./validateService"
 import { unauthorizedError } from "../utils/errors"
 
-const rechargeCard = async (cardId: number, apiKey: string, amount: number) => {
-	await validateEligibilityToRechargeCard(cardId, apiKey)
-	await persistCardRechargeInDatabase(cardId, amount)
-}
-
 const validateEligibilityToRechargeCard = async (
 	cardId: number,
 	apiKey: string
@@ -31,7 +26,8 @@ const persistCardRechargeInDatabase = async (
 }
 
 const rechargeCardService = {
-	rechargeCard,
+	validateEligibilityToRechargeCard,
+	persistCardRechargeInDatabase,
 }
 
 export default rechargeCardService

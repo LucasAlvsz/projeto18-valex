@@ -26,47 +26,13 @@ const EXPIRATION_DATE_YEARS = 5
 
 type cardOperation = "unblock" | "block"
 
-const createCard = async (
-	type: TransactionTypes,
-	employeeId: number,
-	apiKey: string
-) => {
-	const { id } = await validateService.validateApiKey(apiKey)
-	const { companyId, fullName } = await validateEmployee(employeeId)
-	if (companyId !== id)
-		throw unauthorizedError("User does not belong to this company")
-	await validateUniqueTypeCard(type, employeeId)
-	const cardData = generateCardData(fullName, id, type)
-	await cardRepository.insert(cardData)
-}
-
-const activateCard = async (cardId: number, password: string, cvc: string) => {
-	await validateEligibilityForActivation(cardId, cvc)
-	const cardDataUpdate = {
-		isBlocked: false,
-		password: encrypt(password),
-	}
-	await cardRepository.update(cardId, cardDataUpdate)
-}
-
-const blockCard = async (cardId: number, password: string) => {
-	await validateEligibilityForBlockingOrUnblocking(cardId, password, "block")
-	const cardDataUpdate = {
-		isBlocked: true,
-	}
-	await cardRepository.update(cardId, cardDataUpdate)
-}
-
 const unblockCard = async (cardId: number, password: string) => {
 	await validateEligibilityForBlockingOrUnblocking(
 		cardId,
 		password,
 		"unblock"
 	)
-	const cardDataUpdate = {
-		isBlocked: false,
-	}
-	await cardRepository.update(cardId, cardDataUpdate)
+	persistUnlockInDatabase(cardId)
 }
 
 const getCardStatements = async (cardId: number, password: string) => {
@@ -136,6 +102,19 @@ const generateCardData = (
 	}
 }
 
+const validateEligibilityForCreation = async (
+	employeeId: number,
+	type: TransactionTypes,
+	apiKey: string
+) => {
+	const { id } = await validateService.validateApiKey(apiKey)
+	const { companyId, fullName } = await validateEmployee(employeeId)
+	if (companyId !== id)
+		throw unauthorizedError("User does not belong to this company")
+	await validateUniqueTypeCard(type, employeeId)
+	return fullName
+}
+
 const validateEligibilityForActivation = async (
 	cardId: number,
 	cvc: string
@@ -172,13 +151,46 @@ const validateSecurityCode = (encryptedSecurityCode: string, cvc: string) => {
 	if (decryptedSecurityCode !== cvc) throw unauthorizedError("Invalid CVC")
 }
 
+const persistCardInDatabase = async (cardData: CardInsertData) => {
+	await cardRepository.insert(cardData)
+}
+
+const persistActivationInDatabase = async (
+	cardId: number,
+	password: string
+) => {
+	const cardDataUpdate = {
+		isBlocked: false,
+		password: encrypt(password),
+	}
+	await cardRepository.update(cardId, cardDataUpdate)
+}
+
+const persistLockInDatabase = async (cardId: number) => {
+	const cardDataUpdate = {
+		isBlocked: true,
+	}
+	await cardRepository.update(cardId, cardDataUpdate)
+}
+
+const persistUnlockInDatabase = async (cardId: number) => {
+	const cardDataUpdate = {
+		isBlocked: false,
+	}
+	await cardRepository.update(cardId, cardDataUpdate)
+}
+
 //const getBalance = (transactions:, recharges) => {}
 
 const cardService = {
-	createCard,
-	activateCard,
-	blockCard,
-	unblockCard,
+	validateEligibilityForCreation,
+	generateCardData,
+	persistCardInDatabase,
+	validateEligibilityForActivation,
+	persistActivationInDatabase,
+	validateEligibilityForBlockingOrUnblocking,
+	persistLockInDatabase,
+	persistUnlockInDatabase,
 	getCardStatements,
 }
 
