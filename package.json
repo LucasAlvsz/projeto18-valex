@@ -6,7 +6,7 @@
 	"type": "commonjs",
 	"scripts": {
 		"start": "ts-node src/index.ts",
-		"dev": "tsnd --respawn --transpile-only -r dotenv/config src/index.ts"
+		"dev": "tsnd --respawn --transpile-only --ignore-watch node_modules -r dotenv/config src/index.ts"
 	},
 	"prisma": {
 		"seed": "ts-node prisma/seed.ts"

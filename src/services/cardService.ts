@@ -5,18 +5,20 @@ import {
 	unauthorizedError,
 	conflictError,
 } from "../utils/errors"
-import * as companyRepository from "../repositories/companyRepository"
+
 import * as employeeRepository from "../repositories/employeeRepository"
 import * as cardRepository from "../repositories/cardRepository"
 import * as paymentRepository from "../repositories/paymentRepository"
 import * as rechargeRepository from "../repositories/rechargeRepository"
+
+import validateService from "./validateService"
 
 import {
 	TransactionTypes,
 	CardInsertData,
 } from "../repositories/cardRepository"
 
-import { compareDates, sumDateWithYear } from "../utils/dataFormatter"
+import { sumDateWithYear } from "../utils/dataFormatter"
 import { encrypt, decrypt } from "../utils/cryptography"
 
 // Magic Numbers
@@ -29,7 +31,7 @@ const createCard = async (
 	employeeId: number,
 	apiKey: string
 ) => {
-	const { id } = await validateApiKey(apiKey)
+	const { id } = await validateService.validateApiKey(apiKey)
 	const { companyId, fullName } = await validateEmployee(employeeId)
 	if (companyId !== id)
 		throw unauthorizedError("User does not belong to this company")
@@ -68,16 +70,10 @@ const unblockCard = async (cardId: number, password: string) => {
 }
 
 const getCardStatements = async (cardId: number, password: string) => {
-	const { id } = await validateCardId(cardId)
+	const { id } = await validateService.validateCardId(cardId)
 	const transactions = await paymentRepository.findByCardId(cardId)
 	const recharges = await rechargeRepository.findByCardId(cardId)
 	//const balance = getBalance(transactions, recharges)
-}
-
-const validateApiKey = async (apiKey: string) => {
-	const validApiKey = await companyRepository.findByApiKey(apiKey)
-	if (!validApiKey) throw unauthorizedError("Invalid API key")
-	return validApiKey
 }
 
 const validateEmployee = async (employeeId: number) => {
@@ -144,11 +140,10 @@ const validateEligibilityForActivation = async (
 	cardId: number,
 	cvc: string
 ) => {
-	const { expirationDate, securityCode, password } = await validateCardId(
-		cardId
-	)
+	const { expirationDate, securityCode, password } =
+		await validateService.validateCardId(cardId)
 	if (password) throw conflictError("Card is already activated")
-	validateExpirationDate(expirationDate)
+	validateService.validateExpirationDate(expirationDate)
 	validateSecurityCode(securityCode, cvc)
 }
 
@@ -161,25 +156,14 @@ const validateEligibilityForBlockingOrUnblocking = async (
 		password: storagePassword,
 		expirationDate,
 		isBlocked,
-	} = await validateCardId(cardId)
-	validateExpirationDate(expirationDate)
+	} = await validateService.validateCardId(cardId)
+	validateService.validateExpirationDate(expirationDate)
 	if (decrypt(storagePassword) !== password)
 		throw unauthorizedError("Invalid password")
 	if (isBlocked && operation === "block")
 		throw conflictError("Card is already blocked")
 	if (!isBlocked && operation === "unblock")
-		throw conflictError("Card is already unblocked")
-}
-
-const validateCardId = async (cardId: number) => {
-	const card = await cardRepository.findById(cardId)
-	if (!card) throw notFoundError("Card not found")
-	return card
-}
-
-const validateExpirationDate = (expirationDate: string) => {
-	if (compareDates(new Date(), expirationDate) === "after")
-		throw unauthorizedError("Card expired")
+		throw conflictError("Card is already unblocked") //TODO refactor this
 }
 
 const validateSecurityCode = (encryptedSecurityCode: string, cvc: string) => {
