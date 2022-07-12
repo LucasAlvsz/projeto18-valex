@@ -2,6 +2,20 @@
   <img  src="https://cdn.iconscout.com/icon/free/png-256/credit-card-2650080-2196542.png">
 </p>
 
+<div align="center">
+  <h3>Built With</h3>
+
+  <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" height="30px"/>
+  <img src="https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white" height="30px"/>
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" height="30px"/>
+  <img src="https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white" height="30px"/>  
+  <img src="https://img.shields.io/badge/Express.js-404D59?style=for-the-badge&logo=express.js&logoColor=white" height="30px"/>
+  <img src="https://img.shields.io/badge/Heroku-430098?style=for-the-badge&logo=heroku&logoColor=white" height="30px"/>
+  
+
+  <!-- Badges source: https://dev.to/envoy_/150-badges-for-github-pnk -->
+</div>
+
 # Valex 💳
 
 Valex simulates an API that manages a benefit card, generally made available by companies to their employees.
@@ -16,11 +30,10 @@ Valex simulates an API that manages a benefit card, generally made available by 
 -   Recharges a card
 -   Make card payments
 
-#
+</br>
 
 ## API Reference
 
-</br>
 
 ### Get card statements
 
@@ -87,7 +100,7 @@ Valex simulates an API that manages a benefit card, generally made available by 
 
 #
 
-#### Activate a card
+### Activate a card
 
 ```http
   PUT /card/activate
@@ -113,7 +126,7 @@ Valex simulates an API that manages a benefit card, generally made available by 
 
 #
 
-#### Block a card
+### Block a card
 
 ```http
   PUT /card/block
@@ -134,7 +147,7 @@ Valex simulates an API that manages a benefit card, generally made available by 
 
 #
 
-#### Unblock a card
+### Unblock a card
 
 ```http
   PUT /card/unblock
@@ -155,7 +168,7 @@ Valex simulates an API that manages a benefit card, generally made available by 
 
 #
 
-#### Recharge a card
+### Recharge a card
 
 ```http
   POST /card/recharge
@@ -182,7 +195,7 @@ Valex simulates an API that manages a benefit card, generally made available by 
 
 #
 
-#### Card payment
+### Card payment
 
 ```http
   POST /card/payment/POS/${businessId}
@@ -228,7 +241,7 @@ To run this project, you will need to add the following environment variables to
 
 `SECRET_KEY = any string`
 
-#
+</br>
 
 ## Run Locally
 
@@ -262,13 +275,13 @@ Start the server
   npm run start
 ```
 
-#
+</br>
 
 ## Lessons Learned
 
 In this project I learned a lot about how to structure an API with TypeScript
 
-#
+</br>
 
 ## Acknowledgements
 
@@ -276,7 +289,7 @@ In this project I learned a lot about how to structure an API with TypeScript
 -   [Awesome README](https://github.com/matiassingers/awesome-readme)
 -   [How to write a Good readme](https://bulldogjob.com/news/449-how-to-write-a-good-readme-for-your-github-project)
 
-#
+</br>
 
 ## Authors
 
