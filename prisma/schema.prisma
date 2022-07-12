@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model businesses {
+  id       Int             @id @default(autoincrement())
+  name     String          @unique
+  type     transactionType
+  payments payments[]
+}
+
+model cards {
+  id             Int             @id @default(autoincrement())
+  employeeId     Int
+  number         String          @unique
+  cardholderName String
+  securityCode   String
+  expirationDate String
+  password       String?
+  isVirtual      Boolean
+  originalCardId Int?
+  isBlocked      Boolean
+  type           transactionType
+  employees      employees       @relation(fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  cards          cards?          @relation("cardsTocards_originalCardId", fields: [originalCardId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  other_cards    cards[]         @relation("cardsTocards_originalCardId")
+  payments       payments[]
+  recharges      recharges[]
+}
+
+model companies {
+  id        Int         @id @default(autoincrement())
+  name      String      @unique
+  apiKey    String?
+  employees employees[]
+}
+
+model employees {
+  id        Int       @id @default(autoincrement())
+  fullName  String
+  cpf       String    @unique
+  email     String    @unique
+  companyId Int
+  companies companies @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  cards     cards[]
+}
+
+model payments {
+  id         Int        @id @default(autoincrement())
+  cardId     Int
+  businessId Int
+  timestamp  DateTime   @default(now()) @db.Timestamp(0)
+  amount     Int
+  businesses businesses @relation(fields: [businessId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  cards      cards      @relation(fields: [cardId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model recharges {
+  id        Int      @id @default(autoincrement())
+  cardId    Int
+  timestamp DateTime @default(now()) @db.Timestamp(0)
+  amount    Int
+  cards     cards    @relation(fields: [cardId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+enum transactionType {
+  groceries
+  restaurant
+  transport
+  education
+  health
+}

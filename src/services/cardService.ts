@@ -37,6 +37,7 @@ const createCard = async (
 	const cardData = generateCardData(name, employeeId, type)
 	await persistCardInDatabase(cardData)
 	delete cardData.employeeId
+	cardData["cvc"] = cardData["securityCode"]
 	return cardData
 }
 
