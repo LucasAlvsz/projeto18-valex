@@ -48,8 +48,7 @@ const validateEligibilityForPayment = async (
 
 	if (!storagePassword) throw unauthorizedError("Card is not activated")
 	if (isBlocked) throw unauthorizedError("Card is blocked")
-	if (decrypt(storagePassword) !== password)
-		throw unauthorizedError("Invalid password")
+	validateService.validatePassword(storagePassword, password)
 
 	const { type: businessType } = await validateBusinessById(businessId)
 	if (cardType !== businessType)

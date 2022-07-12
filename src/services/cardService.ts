@@ -218,6 +218,8 @@ const validateEligibilityForBlockingOrUnblocking = async (
 		expirationDate
 	)
 	const { password: storagePassword, isBlocked } = cardData
+
+	if (!storagePassword) throw unauthorizedError("Card is not activated")
 	validateService.validateExpirationDate(expirationDate)
 	validateService.validatePassword(password, storagePassword)
 	if (isBlocked && operation === "block")
