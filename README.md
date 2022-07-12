@@ -300,3 +300,10 @@ In this project I learned a lot about how to structure an API with TypeScript
 ## Authors
 
 -   [@LucasAlvsz](https://www.github.com/LucasAlvsz) 🪐
+
+<br/>
+<br/>
+<br/>
+
+#
+<a  href="mailto:contato.lucasalv@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg"></a>
