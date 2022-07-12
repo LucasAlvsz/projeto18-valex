@@ -2,6 +2,7 @@ import * as companyRepository from "../repositories/companyRepository"
 import * as cardRepository from "../repositories/cardRepository"
 import { compareDates } from "../utils/dateFormatterUtils"
 import { unauthorizedError, notFoundError } from "../utils/errorsUtils"
+import { decrypt } from "../utils/cryptographyUtils"
 
 const validateApiKey = async (apiKey: string) => {
 	const validApiKey = await companyRepository.findByApiKey(apiKey)
@@ -34,11 +35,17 @@ const validateCardByDetails = async (
 	return cardData
 }
 
+const validatePassword = async (storagePassword: string, password: string) => {
+	if (decrypt(storagePassword) !== password)
+		throw unauthorizedError("Invalid password")
+}
+
 const validateService = {
 	validateApiKey,
 	validateCardById,
 	validateCardByDetails,
 	validateExpirationDate,
+	validatePassword,
 }
 
 export default validateService

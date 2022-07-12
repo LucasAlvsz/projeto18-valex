@@ -1,5 +1,3 @@
-import { faker } from "@faker-js/faker"
-
 import {
 	notFoundError,
 	unauthorizedError,
@@ -16,26 +14,99 @@ import {
 	CardInsertData,
 } from "../repositories/cardRepository"
 
-import { getFormattedDate, sumDateWithYear } from "../utils/dateFormatterUtils"
+import { getFormattedDate } from "../utils/dateFormatterUtils"
 import { encrypt, decrypt } from "../utils/cryptographyUtils"
 import nameFormatter from "../utils/nameFormatterUtils"
-import getAmount from "./getAmountUtils"
+import getAmount from "../utils/getAmountUtils"
+import {
+	createCardNumber,
+	createExpirationDate,
+	createSecurityCode,
+} from "../utils/cardMockUtils"
+import paymentService from "./paymentService"
+import rechargeService from "./rechargeService"
 
-// Magic Numbers
-const EXPIRATION_DATE_YEARS = 5
+export type cardOperation = "unblock" | "block"
 
-type cardOperation = "unblock" | "block"
-
-const createCardNumber = () => {
-	return faker.finance.creditCardNumber("#### #### #### ####")
+const createCard = async (
+	employeeId: number,
+	type: TransactionTypes,
+	apiKey: string
+) => {
+	const name = await validateEligibilityForCreation(employeeId, type, apiKey)
+	const cardData = generateCardData(name, employeeId, type)
+	await persistCardInDatabase(cardData)
+	delete cardData.employeeId
+	return cardData
 }
 
-const createSecurityCode = () => {
-	return faker.finance.creditCardCVV()
+const activateCard = async (
+	number: string,
+	name: string,
+	expirationDate: string,
+	password: string,
+	cvc: string
+) => {
+	const { id: cardId } = await validateEligibilityForActivation(
+		number,
+		name,
+		expirationDate,
+		cvc
+	)
+	await persistActivationInDatabase(cardId, password)
 }
 
-const createExpirationDate = () => {
-	return sumDateWithYear(new Date(), EXPIRATION_DATE_YEARS)
+const blockCard = async (
+	number: string,
+	name: string,
+	expirationDate: string,
+	password: string
+) => {
+	const { id: cardId } = await validateEligibilityForBlockingOrUnblocking(
+		number,
+		name,
+		expirationDate,
+		password,
+		"block"
+	)
+	await persistLockInDatabase(cardId)
+}
+
+const unblockCard = async (
+	number: string,
+	name: string,
+	expirationDate: string,
+	password: string
+) => {
+	const { id: cardId } = await validateEligibilityForBlockingOrUnblocking(
+		number,
+		name,
+		expirationDate,
+		password,
+		"unblock"
+	)
+	persistUnlockInDatabase(cardId)
+}
+
+const getCardStatements = async (
+	number: string,
+	name: string,
+	expirationDate: string
+) => {
+	const { id: cardId } = await validateService.validateCardByDetails(
+		number,
+		nameFormatter(name),
+		expirationDate
+	)
+	const transactions = await paymentService.getTransactionsByCardId(cardId)
+	const recharges = await rechargeService.getRechargesByCardId(cardId)
+	const balance = getBalance(transactions, recharges)
+	const formattedStatementsData = cardService.getformattedStatementsData(
+		recharges,
+		transactions,
+		balance
+	)
+	return formattedStatementsData
 }
 
 const generateCardData = (
@@ -148,19 +219,17 @@ const validateEligibilityForBlockingOrUnblocking = async (
 	)
 	const { password: storagePassword, isBlocked } = cardData
 	validateService.validateExpirationDate(expirationDate)
-	if (decrypt(storagePassword) !== password)
-		throw unauthorizedError("Invalid password")
+	validateService.validatePassword(password, storagePassword)
 	if (isBlocked && operation === "block")
 		throw conflictError("Card is already blocked")
 	if (!isBlocked && operation === "unblock")
-		throw conflictError("Card is already unblocked") //REFACTOR this
+		throw conflictError("Card is already unblocked")
 
 	return cardData
 }
 
 const validateSecurityCode = (encryptedSecurityCode: string, cvc: string) => {
 	const decryptedSecurityCode = decrypt(encryptedSecurityCode)
-	console.log(decryptedSecurityCode, cvc)
 	if (decryptedSecurityCode !== cvc) throw unauthorizedError("Invalid CVC")
 }
 
@@ -195,14 +264,11 @@ const persistUnlockInDatabase = async (cardId: number) => {
 }
 
 const cardService = {
-	validateEligibilityForCreation,
-	generateCardData,
-	persistCardInDatabase,
-	validateEligibilityForActivation,
-	persistActivationInDatabase,
-	validateEligibilityForBlockingOrUnblocking,
-	persistLockInDatabase,
-	persistUnlockInDatabase,
+	createCard,
+	activateCard,
+	blockCard,
+	unblockCard,
+	getCardStatements,
 	getBalance,
 	getformattedStatementsData,
 }

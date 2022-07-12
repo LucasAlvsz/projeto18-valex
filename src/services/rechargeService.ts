@@ -3,6 +3,22 @@ import validateService from "./validateService"
 import { unauthorizedError } from "../utils/errorsUtils"
 import nameFormatter from "../utils/nameFormatterUtils"
 
+const rechargeCard = async (
+	number: string,
+	name: string,
+	expirationDate: string,
+	apiKey: string,
+	amount: number
+) => {
+	const { id: cardId } = await validateEligibilityToRechargeCard(
+		number,
+		name,
+		expirationDate,
+		apiKey
+	)
+	await persistCardRechargeInDatabase(cardId, amount)
+}
+
 const validateEligibilityToRechargeCard = async (
 	number: string,
 	name: string,
@@ -40,8 +56,7 @@ const persistCardRechargeInDatabase = async (
 }
 
 const rechargeService = {
-	validateEligibilityToRechargeCard,
-	persistCardRechargeInDatabase,
+	rechargeCard,
 	getRechargesByCardId,
 }
 

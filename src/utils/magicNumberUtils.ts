@@ -1,0 +1,1 @@
+export const EXPIRATION_DATE_YEARS = 5

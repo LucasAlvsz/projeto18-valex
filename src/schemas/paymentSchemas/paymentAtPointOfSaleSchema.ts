@@ -10,7 +10,7 @@ const paramsSchema = Joi.object({
 const bodySchema = cardIdentifierSchema
 	.keys({
 		password: Joi.string().required(),
-		amount: Joi.number().positive().required(),
+		amount: Joi.number().integer().positive().required(),
 	})
 	.required()
 	.options({ allowUnknown: false })

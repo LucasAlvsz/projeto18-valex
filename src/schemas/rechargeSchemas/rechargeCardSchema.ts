@@ -9,7 +9,7 @@ const headersSchema = Joi.object({
 
 const bodySchema = cardIdentifierSchema
 	.keys({
-		amount: Joi.number().min(1).required(),
+		amount: Joi.number().integer().positive().required(),
 	})
 	.required()
 	.options({ allowUnknown: false })

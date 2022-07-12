@@ -4,6 +4,30 @@ import nameFormatter from "../utils/nameFormatterUtils"
 import validateService from "./validateService"
 import * as businessRepository from "../repositories/businessRepository"
 import * as paymentRepository from "../repositories/paymentRepository"
+import rechargeService from "./rechargeService"
+import cardService from "./cardService"
+
+const paymentAtPointOfSale = async (
+	number: string,
+	name: string,
+	expirationDate: string,
+	password: string,
+	businessId: number,
+	amount: number
+) => {
+	const { id: cardId } = await validateEligibilityForPayment(
+		number,
+		name,
+		expirationDate,
+		password,
+		businessId
+	)
+	const transactions = await paymentService.getTransactionsByCardId(cardId)
+	const recharges = await rechargeService.getRechargesByCardId(cardId)
+	const balance = cardService.getBalance(transactions, recharges)
+	if (balance < amount) throw unauthorizedError("Insufficient funds")
+	await persistPaymentInDatabase(cardId, businessId, amount)
+}
 
 const validateEligibilityForPayment = async (
 	number: string,
@@ -56,8 +80,7 @@ const persistPaymentInDatabase = async (
 }
 
 const paymentService = {
-	validateEligibilityForPayment,
-	persistPaymentInDatabase,
+	paymentAtPointOfSale,
 	getTransactionsByCardId,
 }
 
