@@ -265,7 +265,13 @@ Install dependencies
 Create database
 
 ```bash
-  bash ./db/dbConfig/create-database
+  cd src/db/dbConfig
+```
+```bash
+  bash ./create-database
+```
+```bash
+  cd ../../..
 ```
 
 Start the server
