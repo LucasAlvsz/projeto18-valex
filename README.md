@@ -253,7 +253,7 @@ Clone the project
 Go to the project directory
 
 ```bash
-  cd my-project
+  cd projeto18-valex/
 ```
 
 Install dependencies
