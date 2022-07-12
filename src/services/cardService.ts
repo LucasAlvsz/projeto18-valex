@@ -221,12 +221,11 @@ const validateEligibilityForBlockingOrUnblocking = async (
 
 	if (!storagePassword) throw unauthorizedError("Card is not activated")
 	validateService.validateExpirationDate(expirationDate)
-	validateService.validatePassword(password, storagePassword)
+	validateService.validatePassword(storagePassword, password)
 	if (isBlocked && operation === "block")
 		throw conflictError("Card is already blocked")
 	if (!isBlocked && operation === "unblock")
 		throw conflictError("Card is already unblocked")
-
 	return cardData
 }
 

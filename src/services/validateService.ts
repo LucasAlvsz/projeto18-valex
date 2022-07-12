@@ -35,7 +35,7 @@ const validateCardByDetails = async (
 	return cardData
 }
 
-const validatePassword = async (storagePassword: string, password: string) => {
+const validatePassword = (storagePassword: string, password: string) => {
 	if (decrypt(storagePassword) !== password)
 		throw unauthorizedError("Invalid password")
 }

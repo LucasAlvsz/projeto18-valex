@@ -34,7 +34,7 @@ export const activateCard = async (req: Request, res: Response) => {
 export const blockCard = async (req: Request, res: Response) => {
 	const { number, name, expirationDate, password }: BlockCardBody = req.body
 
-	cardService.blockCard(number, name, expirationDate, password)
+	await cardService.blockCard(number, name, expirationDate, password)
 
 	res.sendStatus(200)
 }
@@ -42,7 +42,7 @@ export const blockCard = async (req: Request, res: Response) => {
 export const unblockCard = async (req: Request, res: Response) => {
 	const { number, name, expirationDate, password }: UnblockCardBody = req.body
 
-	cardService.unblockCard(number, name, expirationDate, password)
+	await cardService.unblockCard(number, name, expirationDate, password)
 
 	res.sendStatus(200)
 }
