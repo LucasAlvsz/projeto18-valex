@@ -16,11 +16,10 @@ Valex simulates an API that manages a benefit card, generally made available by 
 -   Recharges a card
 -   Make card payments
 
-#
+</br>
 
 ## API Reference
 
-</br>
 
 ### Get card statements
 
@@ -87,7 +86,7 @@ Valex simulates an API that manages a benefit card, generally made available by 
 
 #
 
-#### Activate a card
+### Activate a card
 
 ```http
   PUT /card/activate
@@ -113,7 +112,7 @@ Valex simulates an API that manages a benefit card, generally made available by 
 
 #
 
-#### Block a card
+### Block a card
 
 ```http
   PUT /card/block
@@ -134,7 +133,7 @@ Valex simulates an API that manages a benefit card, generally made available by 
 
 #
 
-#### Unblock a card
+### Unblock a card
 
 ```http
   PUT /card/unblock
@@ -155,7 +154,7 @@ Valex simulates an API that manages a benefit card, generally made available by 
 
 #
 
-#### Recharge a card
+### Recharge a card
 
 ```http
   POST /card/recharge
@@ -182,7 +181,7 @@ Valex simulates an API that manages a benefit card, generally made available by 
 
 #
 
-#### Card payment
+### Card payment
 
 ```http
   POST /card/payment/POS/${businessId}
@@ -228,7 +227,7 @@ To run this project, you will need to add the following environment variables to
 
 `SECRET_KEY = any string`
 
-#
+</br>
 
 ## Run Locally
 
@@ -262,13 +261,13 @@ Start the server
   npm run start
 ```
 
-#
+</br>
 
 ## Lessons Learned
 
 In this project I learned a lot about how to structure an API with TypeScript
 
-#
+</br>
 
 ## Acknowledgements
 
@@ -276,7 +275,7 @@ In this project I learned a lot about how to structure an API with TypeScript
 -   [Awesome README](https://github.com/matiassingers/awesome-readme)
 -   [How to write a Good readme](https://bulldogjob.com/news/449-how-to-write-a-good-readme-for-your-github-project)
 
-#
+</br>
 
 ## Authors
 
