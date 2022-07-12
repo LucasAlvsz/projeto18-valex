@@ -253,7 +253,7 @@ Clone the project
 Go to the project directory
 
 ```bash
-  cd my-project
+  cd projeto18-valex/
 ```
 
 Install dependencies
@@ -265,7 +265,13 @@ Install dependencies
 Create database
 
 ```bash
-  bash ./db/dbConfig/create-database
+  cd src/db/dbConfig
+```
+```bash
+  bash ./create-database
+```
+```bash
+  cd ../../..
 ```
 
 Start the server
