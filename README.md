@@ -40,7 +40,7 @@ Valex simulates an API that manages a benefit card, generally made available by 
 ### Get card statements
 
 ```http
-  GET /card/statements
+GET /card/statements
 ```
 
 #### Request:
@@ -60,7 +60,7 @@ Valex simulates an API that manages a benefit card, generally made available by 
 ### Create a card
 
 ```http
-  POST /card/create/${emploeeId}
+POST /card/create/${emploeeId}
 ```
 
 #### Request:
@@ -105,7 +105,7 @@ Valex simulates an API that manages a benefit card, generally made available by 
 ### Activate a card
 
 ```http
-  PUT /card/activate
+PUT /card/activate
 ```
 
 #### Request:
@@ -131,7 +131,7 @@ Valex simulates an API that manages a benefit card, generally made available by 
 ### Block a card
 
 ```http
-  PUT /card/block
+PUT /card/block
 ```
 
 #### Request:
@@ -152,7 +152,7 @@ Valex simulates an API that manages a benefit card, generally made available by 
 ### Unblock a card
 
 ```http
-  PUT /card/unblock
+PUT /card/unblock
 ```
 
 #### Request:
@@ -173,7 +173,7 @@ Valex simulates an API that manages a benefit card, generally made available by 
 ### Recharge a card
 
 ```http
-  POST /card/recharge
+POST /card/recharge
 ```
 
 #### Request:
@@ -200,7 +200,7 @@ Valex simulates an API that manages a benefit card, generally made available by 
 ### Card payment
 
 ```http
-  POST /card/payment/POS/${businessId}
+POST /card/payment/POS/${businessId}
 ```
 
 #### Request:
