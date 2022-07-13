@@ -79,7 +79,7 @@ POST /card/create/${emploeeId}
 
 | Body   | Type       | Description             |
 | :----- | :--------- | :---------------------- |
-| `type` | `[string]` | **Required**. card type |
+| `type` | `string` | **Required**. card type |
 
 `Valid types: [groceries, restaurant, transport, education, health]`
 
