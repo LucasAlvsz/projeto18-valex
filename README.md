@@ -40,20 +40,14 @@ Valex simulates an API that manages a benefit card, generally made available by 
 ### Get card statements
 
 ```http
-GET /card/statements
+GET /card/statements/${cardId}
 ```
 
 #### Request:
 
-| Body             | Type     | Description                        |
+| Params             | Type     | Description                        |
 | :--------------- | :------- | :--------------------------------- |
-| `name`           | `string` | **Required**. user full name       |
-| `number`         | `string` | **Required**. card number          |
-| `expirationDate` | `string` | **Required**. card expiration date |
-
-`Number Format: "1111 1111 1111 1111"`
-
-`Expiration Date Format: "MM/YY"`
+| `cardId`           | `Int` | **Required**. card id       |
 
 #
 
@@ -67,7 +61,7 @@ POST /card/create/${emploeeId}
 
 | Params      | Type      | Description           |
 | :---------- | :-------- | :-------------------- |
-| `emploeeId` | `integer` | **Required**. user Id |
+| `emploeeId` | `integer` | **Required**. user id |
 
 ####
 
