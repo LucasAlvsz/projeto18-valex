@@ -1,10 +1,9 @@
 import Joi from "joi"
-import cardIdentifierSchema from "../cardIdentifierSchema"
 
-const bodySchema = cardIdentifierSchema.options({ allowUnknown: false })
+const paramsSchema = Joi.object({ id: Joi.number().required() })
 
 const getCardStatementsSchema = Joi.object({
-	body: bodySchema,
+	params: paramsSchema,
 })
 	.required()
 	.options({ allowUnknown: true })

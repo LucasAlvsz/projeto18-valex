@@ -1,38 +1,23 @@
-import {
-	notFoundError,
-	unauthorizedError,
-	conflictError,
-} from "../utils/errorsUtils"
+import { notFoundError, unauthorizedError, conflictError } from "../utils/errorsUtils"
 
 import * as employeeRepository from "../repositories/employeeRepository"
 import * as cardRepository from "../repositories/cardRepository"
 
 import validateService from "./validateService"
 
-import {
-	TransactionTypes,
-	CardInsertData,
-} from "../repositories/cardRepository"
+import { TransactionTypes, CardInsertData } from "../repositories/cardRepository"
 
 import { getFormattedDate } from "../utils/dateFormatterUtils"
 import { encrypt, decrypt } from "../utils/cryptographyUtils"
 import nameFormatter from "../utils/nameFormatterUtils"
 import getAmount from "../utils/getAmountUtils"
-import {
-	createCardNumber,
-	createExpirationDate,
-	createSecurityCode,
-} from "../utils/cardMockUtils"
+import { createCardNumber, createExpirationDate, createSecurityCode } from "../utils/cardMockUtils"
 import paymentService from "./paymentService"
 import rechargeService from "./rechargeService"
 
 export type cardOperation = "unblock" | "block"
 
-const createCard = async (
-	employeeId: number,
-	type: TransactionTypes,
-	apiKey: string
-) => {
+const createCard = async (employeeId: number, type: TransactionTypes, apiKey: string) => {
 	const name = await validateEligibilityForCreation(employeeId, type, apiKey)
 	const cardData = generateCardData(name, employeeId, type)
 	await persistCardInDatabase(cardData)
@@ -48,12 +33,7 @@ const activateCard = async (
 	password: string,
 	cvc: string
 ) => {
-	const { id: cardId } = await validateEligibilityForActivation(
-		number,
-		name,
-		expirationDate,
-		cvc
-	)
+	const { id: cardId } = await validateEligibilityForActivation(number, name, expirationDate, cvc)
 	await persistActivationInDatabase(cardId, password)
 }
 
@@ -89,16 +69,8 @@ const unblockCard = async (
 	persistUnlockInDatabase(cardId)
 }
 
-const getCardStatements = async (
-	number: string,
-	name: string,
-	expirationDate: string
-) => {
-	const { id: cardId } = await validateService.validateCardByDetails(
-		number,
-		nameFormatter(name),
-		expirationDate
-	)
+const getCardStatements = async (id: number) => {
+	const { id: cardId } = await validateService.validateCardById(id)
 	const transactions = await paymentService.getTransactionsByCardId(cardId)
 	const recharges = await rechargeService.getRechargesByCardId(cardId)
 	const balance = getBalance(transactions, recharges)
@@ -136,16 +108,8 @@ const getformattedStatementsData = (
 	transactions: object[],
 	balance: number
 ) => {
-	const formattedRecharges = getFormattedDate(
-		rechargeData,
-		"timestamp",
-		"DD/MM/YYYY"
-	)
-	const formattedTransactions = getFormattedDate(
-		transactions,
-		"timestamp",
-		"DD/MM/YYYY"
-	)
+	const formattedRecharges = getFormattedDate(rechargeData, "timestamp", "DD/MM/YYYY")
+	const formattedTransactions = getFormattedDate(transactions, "timestamp", "DD/MM/YYYY")
 	const formattedStatementsData = {
 		balance,
 		transactions: formattedTransactions,
@@ -158,13 +122,9 @@ const getBalance = (transactions: object[], recharges: object[]) => {
 	return getAmount(recharges, "amount") - getAmount(transactions, "amount")
 }
 
-const validateUniqueTypeCard = async (
-	type: TransactionTypes,
-	employeeId: number
-) => {
+const validateUniqueTypeCard = async (type: TransactionTypes, employeeId: number) => {
 	const card = await cardRepository.findByTypeAndEmployeeId(type, employeeId)
-	if (card)
-		throw conflictError(`${type} card already exists for this employee`)
+	if (card) throw conflictError(`${type} card already exists for this employee`)
 }
 
 const validateEmployee = async (employeeId: number) => {
@@ -180,8 +140,7 @@ const validateEligibilityForCreation = async (
 ) => {
 	const { id } = await validateService.validateApiKey(apiKey)
 	const { companyId, fullName } = await validateEmployee(employeeId)
-	if (companyId !== id)
-		throw unauthorizedError("User does not belong to this company")
+	if (companyId !== id) throw unauthorizedError("User does not belong to this company")
 	await validateUniqueTypeCard(type, employeeId)
 	return fullName
 }
@@ -223,10 +182,8 @@ const validateEligibilityForBlockingOrUnblocking = async (
 	if (!storagePassword) throw unauthorizedError("Card is not activated")
 	validateService.validateExpirationDate(expirationDate)
 	validateService.validatePassword(storagePassword, password)
-	if (isBlocked && operation === "block")
-		throw conflictError("Card is already blocked")
-	if (!isBlocked && operation === "unblock")
-		throw conflictError("Card is already unblocked")
+	if (isBlocked && operation === "block") throw conflictError("Card is already blocked")
+	if (!isBlocked && operation === "unblock") throw conflictError("Card is already unblocked")
 	return cardData
 }
 
@@ -240,10 +197,7 @@ const persistCardInDatabase = async (cardData: CardInsertData) => {
 	await cardRepository.insert(cardData)
 }
 
-const persistActivationInDatabase = async (
-	cardId: number,
-	password: string
-) => {
+const persistActivationInDatabase = async (cardId: number, password: string) => {
 	const cardDataUpdate = {
 		isBlocked: false,
 		password: encrypt(password),

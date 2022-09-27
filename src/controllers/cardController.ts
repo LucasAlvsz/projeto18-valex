@@ -23,8 +23,7 @@ type BlockCardBody = Omit<ActivateCardBody, "cvc">
 type UnblockCardBody = BlockCardBody
 
 export const activateCard = async (req: Request, res: Response) => {
-	const { number, name, expirationDate, password, cvc }: ActivateCardBody =
-		req.body
+	const { number, name, expirationDate, password, cvc }: ActivateCardBody = req.body
 
 	await cardService.activateCard(number, name, expirationDate, password, cvc)
 
@@ -48,11 +47,7 @@ export const unblockCard = async (req: Request, res: Response) => {
 }
 
 export const getCardStatements = async (req: Request, res: Response) => {
-	const { number, name, expirationDate }: cardIdentifier = req.body
-	const formattedStatementsData = await cardService.getCardStatements(
-		number,
-		name,
-		expirationDate
-	)
+	const { id } = req.params
+	const formattedStatementsData = await cardService.getCardStatements(parseInt(id))
 	res.status(200).send(formattedStatementsData)
 }

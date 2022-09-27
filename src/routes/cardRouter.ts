@@ -10,40 +10,20 @@ import {
 import schemaValidateMiddleware from "../middlewares/schemaValidateMiddleware"
 import cardSchemas from "../schemas/cardSchemas/index"
 
-const {
-	createCardSchema,
-	activateCardSchema,
-	blockAndUnblockCardSchema,
-	getCardStatementsSchema,
-} = cardSchemas
+const { createCardSchema, activateCardSchema, blockAndUnblockCardSchema, getCardStatementsSchema } =
+	cardSchemas
 
 const cardRouter = Router()
 
-cardRouter.post(
-	"/create/:employeeId",
-	schemaValidateMiddleware(createCardSchema),
-	createCard
-)
-cardRouter.put(
-	"/activate",
-	schemaValidateMiddleware(activateCardSchema),
-	activateCard
-)
+cardRouter.post("/create/:employeeId", schemaValidateMiddleware(createCardSchema), createCard)
+cardRouter.put("/activate", schemaValidateMiddleware(activateCardSchema), activateCard)
 
-cardRouter.put(
-	"/block",
-	schemaValidateMiddleware(blockAndUnblockCardSchema),
-	blockCard
-)
+cardRouter.put("/block", schemaValidateMiddleware(blockAndUnblockCardSchema), blockCard)
 
-cardRouter.put(
-	"/unblock",
-	schemaValidateMiddleware(blockAndUnblockCardSchema),
-	unblockCard
-)
+cardRouter.put("/unblock", schemaValidateMiddleware(blockAndUnblockCardSchema), unblockCard)
 
 cardRouter.get(
-	"/statements",
+	"/statements/:id",
 	schemaValidateMiddleware(getCardStatementsSchema),
 	getCardStatements
 )
