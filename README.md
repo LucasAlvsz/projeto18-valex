@@ -207,7 +207,7 @@ POST /card/payment/POS/${businessId}
 
 | Params       | Type      | Description               |
 | :----------- | :-------- | :------------------------ |
-| `businessId` | `integer` | **Required**. business Id |
+| `businessId` | `integer` | **Required**. business id |
 
 ####
 
