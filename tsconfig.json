@@ -1,11 +1,13 @@
 {
-  "compilerOptions": {
-    "esModuleInterop": true,
-    "module": "CommonJS",
-    "moduleResolution": "node", 
-    "outDir": "dist"
-  },
-  "ts-node": {
-    "esm": false
-  }
+	"compilerOptions": {
+		"esModuleInterop": true,
+		"module": "CommonJS",
+		"moduleResolution": "node",
+		"outDir": "dist",
+		"target": "ES2017"
+	},
+	"ts-node": {
+		"esm": false
+	},
+	"include": ["src/**/*"]
 }
