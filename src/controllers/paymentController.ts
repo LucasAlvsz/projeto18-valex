@@ -8,21 +8,15 @@ type paymentAtPointOfSaleBody = cardIdentifier & {
 }
 
 export const paymentAtPointOfSale = async (req: Request, res: Response) => {
-	const {
-		number,
-		name,
-		expirationDate,
-		password,
-		amount,
-	}: paymentAtPointOfSaleBody = req.body
-	const { businessId } = req.params as { businessId: any }
+	const { number, name, expirationDate, password, amount }: paymentAtPointOfSaleBody = req.body
+	const { businessId } = req.params
 
 	await paymentService.paymentAtPointOfSale(
 		number,
 		name,
 		expirationDate,
 		password,
-		businessId,
+		parseInt(businessId),
 		amount
 	)
 

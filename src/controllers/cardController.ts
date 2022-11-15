@@ -4,10 +4,10 @@ import { TransactionTypes } from "../repositories/cardRepository"
 
 export const createCard = async (req: Request, res: Response) => {
 	const { type } = req.body as { type: TransactionTypes }
-	const { employeeId } = req.params as { employeeId: any }
+	const { employeeId } = req.params
 	const { "x-api-key": apiKey } = req.headers as { "x-api-key": string }
 
-	const cardData = await cardService.createCard(employeeId, type, apiKey)
+	const cardData = await cardService.createCard(parseInt(employeeId), type, apiKey)
 
 	res.status(201).send(cardData)
 }
