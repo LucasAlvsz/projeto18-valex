@@ -8,9 +8,11 @@ import rechargeRouter from "./rechargeRouter"
 import paymentRouter from "./paymentRouter"
 
 const router = Router()
-router.use("/card", cardRouter)
-router.use("/card", rechargeRouter)
-router.use("/card", paymentRouter)
-router.use(handleErrorMiddleware)
+
+router
+	.use("/card", cardRouter)
+	.use("/card", rechargeRouter)
+	.use("/card", paymentRouter)
+	.use(handleErrorMiddleware)
 
 export default router

@@ -15,17 +15,11 @@ const { createCardSchema, activateCardSchema, blockAndUnblockCardSchema, getCard
 
 const cardRouter = Router()
 
-cardRouter.post("/create/:employeeId", schemaValidateMiddleware(createCardSchema), createCard)
-cardRouter.put("/activate", schemaValidateMiddleware(activateCardSchema), activateCard)
-
-cardRouter.put("/block", schemaValidateMiddleware(blockAndUnblockCardSchema), blockCard)
-
-cardRouter.put("/unblock", schemaValidateMiddleware(blockAndUnblockCardSchema), unblockCard)
-
-cardRouter.get(
-	"/statements/:id",
-	schemaValidateMiddleware(getCardStatementsSchema),
-	getCardStatements
-)
+cardRouter
+	.post("/create/:employeeId", schemaValidateMiddleware(createCardSchema), createCard)
+	.put("/activate", schemaValidateMiddleware(activateCardSchema), activateCard)
+	.put("/block", schemaValidateMiddleware(blockAndUnblockCardSchema), blockCard)
+	.put("/unblock", schemaValidateMiddleware(blockAndUnblockCardSchema), unblockCard)
+	.get("/statements/:id", schemaValidateMiddleware(getCardStatementsSchema), getCardStatements)
 
 export default cardRouter
